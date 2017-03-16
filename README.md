@@ -8,7 +8,11 @@ PartialJSON makes it possible to marshal structs to JSON, while selecting which 
 
 The type check occurs at runtime - the idea is to fail early instead of producing incorrect json data.
 
-Note that the library will panic if an incorrect type is encountered at the moment.
+## Notes about type safety
+
+When using `Set()` to assign values, the library will _panic_ if an incorrect type is encountered at the moment.
+
+To ensure type safety at compile time, assign values to the struct as usual, and flag them for inclusion by calling `Use()`
 
 ## Usage
 
