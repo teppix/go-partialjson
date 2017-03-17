@@ -2,7 +2,6 @@
 package partialjson
 
 // TODO - allow embedding Builder (partial) as struct field
-// TODO - check for duplicate fields in Set() and Use()
 
 import (
 	"bytes"
@@ -23,7 +22,25 @@ func (b *Builder) Partial() *Builder {
 	return b
 }
 
+// IsSet returns true if key is set
+func (b *Builder) IsSet(name string) bool {
+	return b.indexOf(name) != -1
+}
+
+// indexOf returns index of key.
+// -1 is returned if there is no match.
+func (b *Builder) indexOf(name string) int {
+	for i, key := range b.keys {
+		if key == name {
+			return i
+		}
+	}
+	return -1
+}
+
 // Set marks a field for inclusion and updates its value.
+// - Each key is only added once
+// - Every call using same key replaces the previous value
 func (b *Builder) Set(name string, val interface{}) *Builder {
 	container := reflect.Indirect(reflect.ValueOf(b.base))
 	field := container.FieldByName(name)
@@ -34,13 +51,16 @@ func (b *Builder) Set(name string, val interface{}) *Builder {
 	}
 
 	field.Set(reflect.ValueOf(val))
-	b.keys = append(b.keys, name)
+	b.Use(name)
 	return b
 }
 
 // Use marks a field for inclusion without changing its value.
+// Each key is only added once
 func (b *Builder) Use(name string) *Builder {
-	b.keys = append(b.keys, name)
+	if !b.IsSet(name) {
+		b.keys = append(b.keys, name)
+	}
 	return b
 }
 

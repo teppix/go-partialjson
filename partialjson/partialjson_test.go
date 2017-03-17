@@ -131,3 +131,27 @@ func TestComplexValues(t *testing.T) {
 			Set("A", struct1{"foo"}).
 			Set("B", []struct1{{"bar"}, {"baz"}}))
 }
+
+func TestMultipleAssignments(t *testing.T) {
+	type struct1 struct {
+		A string
+	}
+
+	// test calling Set() twice for same key
+	checkJSON(t,
+		&struct1{"foo"},
+		Begin(&struct1{}).
+			Set("A", "bar").
+			Set("A", "foo").
+			Partial(),
+	)
+
+	// test calling Use() twice for same key
+	checkJSON(t,
+		&struct1{"foo"},
+		Begin(&struct1{"foo"}).
+			Use("A").
+			Use("A").
+			Partial(),
+	)
+}
