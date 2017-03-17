@@ -155,3 +155,23 @@ func TestMultipleAssignments(t *testing.T) {
 			Partial(),
 	)
 }
+
+func TestRemove(t *testing.T) {
+	type struct1a struct {
+		B string
+	}
+
+	type struct1b struct {
+		A string
+		B string
+	}
+	// test calling Set() twice for same key
+	checkJSON(t,
+		&struct1a{"foo"},
+		Begin(&struct1b{}).
+			Set("A", "bar").
+			Set("B", "foo").
+			Remove("A").
+			Partial(),
+	)
+}

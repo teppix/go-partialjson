@@ -38,6 +38,20 @@ func (b *Builder) indexOf(name string) int {
 	return -1
 }
 
+// Remove removes the key from the builder.
+//
+// The actual field value of the underlying struct
+// remains unchanged.
+func (b *Builder) Remove(name string) *Builder {
+	index := b.indexOf(name)
+	if index == -1 {
+		return b
+	}
+
+	b.keys = append(b.keys[:index], b.keys[index+1:]...)
+	return b
+}
+
 // Set marks a field for inclusion and updates its value.
 // - Each key is only added once
 // - Every call using same key replaces the previous value
